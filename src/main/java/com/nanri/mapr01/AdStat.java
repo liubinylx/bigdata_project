@@ -17,6 +17,7 @@ import java.io.IOException;
  * 广告统计
  * 按天统计曝光量
  * 升序及降序排列
+ * 此程序数据集在本项目data目录下adstat文件夹中
  */
 public class AdStat {
     /**

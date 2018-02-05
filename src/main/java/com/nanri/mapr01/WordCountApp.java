@@ -14,6 +14,9 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
 
+/**
+ * 一个简单的WordCount程序
+ */
 public class WordCountApp {
     static class WordCountMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
         @Override
