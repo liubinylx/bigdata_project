@@ -13,19 +13,33 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
 
+/**
+ * 广告统计
+ * 按天统计曝光量
+ * 升序及降序排列
+ */
 public class AdStat {
+    /**
+     * Map程序，读取数据，将曝光量按天为key，1为value写出
+     */
     static class AdStatMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+            //读取数据
             String[] values = value.toString().trim().split("\t");
+            //浏览类型，1为曝光，2为点击
             String viewType = values[2].trim();
             String statDat = values[3];
-            if("1".equals(viewType)) {
+            if("1".equals(viewType)) {//统计曝光量
                 context.write(new Text(statDat), new IntWritable(1));
             }
         }
     }
 
+    /**
+     * Reduce程序，对每天的Reduce程序加和
+     */
     static class AdStatReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
         @Override
         protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
@@ -37,6 +51,9 @@ public class AdStat {
         }
     }
 
+    /**
+     * 排序的Map程序，在这里只是简单的调换顺序，以便利用MapReduce的Shuffle进行排序
+     */
     static class AdSortMapper extends Mapper<LongWritable, Text, IntWritable, Text> {
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
@@ -48,6 +65,9 @@ public class AdStat {
         }
     }
 
+    /**
+     * 调换位置，写出即可
+     */
     static class AdSortReducer extends Reducer<IntWritable, Text, Text, IntWritable> {
         @Override
         protected void reduce(IntWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
@@ -90,6 +110,8 @@ public class AdStat {
         jobPvSort.setJarByClass(AdStat.class);
         jobPvSort.setMapperClass(AdSortMapper.class);
         jobPvSort.setReducerClass(AdSortReducer.class);
+        //添加比较器，如果未正序，此比较器不需要添加
+        jobPvSort.setSortComparatorClass(IntWritableDescComparator.class);
         jobPvSort.setMapOutputValueClass(Text.class);
         jobPvSort.setMapOutputKeyClass(IntWritable.class);
         jobPvSort.setOutputValueClass(IntWritable.class);
