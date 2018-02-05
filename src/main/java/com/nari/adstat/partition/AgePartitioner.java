@@ -3,7 +3,9 @@ package com.nari.adstat.partition;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Partitioner;
 
-
+/**
+ * 自定义partitioner
+ */
 public class AgePartitioner extends Partitioner<Text, Text> {
 
     public int getPartition(Text key, Text value, int numReduceTasks) {

@@ -12,6 +12,10 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
 
+/**
+ * 求不同年龄，不同性别的最高分
+ * 本例数据在/data/scoredata中
+ */
 public class ScoreStatByAgeGenderApp {
     static class ScoreStatMapper extends Mapper<LongWritable, Text, Text, Text> {
         @Override
@@ -56,6 +60,7 @@ public class ScoreStatByAgeGenderApp {
         job.setMapperClass(ScoreStatMapper.class);
         job.setReducerClass(ScoreStatReducer.class);
 
+        //设置自定义的partitioner
         job.setPartitionerClass(AgePartitioner.class);
         job.setNumReduceTasks(3);
         job.setMapOutputKeyClass(Text.class);
